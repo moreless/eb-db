@@ -3,9 +3,19 @@
 import requests
 import sys
 import re
+import calendar
+import dateutil.parser
+from datetime import datetime, timedelta
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
+def utc_to_local(utc_dt):
+    # get integer timestamp to avoid precision lost
+    timestamp = calendar.timegm(utc_dt.timetuple())
+    local_dt = datetime.fromtimestamp(timestamp)
+    assert utc_dt.resolution >= timedelta(microseconds=1)
+    return local_dt.replace(microsecond=utc_dt.microsecond)
 
 def add_quote(str):
 	return '"'+str+'"'
@@ -53,16 +63,18 @@ for i in range (response.json()["pagination"]["object_count"]):
 	first_attend =answers[8]
 	live_place = answers[9]
 	where = answers[10]
+	utc_date = dateutil.parser.parse(est_time)
+	date = utc_to_local(utc_date)
 
 	try :
 		wechat_id['answer']
 		hobbies['answer']
 		print i+1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id['answer'], first_time['answer'], \
 		      '"'+hobbies['answer'].replace(',', ' ').rstrip()+'"', '"'+books['answer'].replace(',', ' ').rstrip()+'"', company['answer'], \
-		      add_quote(position['answer']), add_quote(live_place['answer']), where['answer'], status, est_time
+		      add_quote(position['answer']), add_quote(live_place['answer']), where['answer'], status, date
 		str='%d,%s,%s.%s,%s\n' %(i+1, user_profile['name'], user_profile['email'], wechat_id['answer'], hobbies['answer'])
 	except :
-		print i+1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), status, est_time
+		print i+1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), status, date
 		str='%d,%s,%s\n' % (i+1, user_profile['name'], user_profile['email'])
 '''for i in range (response.json()["pagination"]["object_count"]):
 	user_profile=response.json()['attendees'][i]['profile']
