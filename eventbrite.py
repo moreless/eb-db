@@ -43,6 +43,7 @@ for i in range (response.json()["pagination"]["object_count"]):
 	user_profile=response.json()['attendees'][i]['profile']
 	answers = response.json()['attendees'][i]['answers']
 	status= response.json()['attendees'][i]['barcodes'][0]['status']
+	est_time = response.json()['attendees'][i]['barcodes'][0]['created']
 	first_time=answers[2]
 	wechat_id = answers[3]
 	hobbies = answers[4]
@@ -58,10 +59,10 @@ for i in range (response.json()["pagination"]["object_count"]):
 		hobbies['answer']
 		print i+1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id['answer'], first_time['answer'], \
 		      '"'+hobbies['answer'].replace(',', ' ').rstrip()+'"', '"'+books['answer'].replace(',', ' ').rstrip()+'"', company['answer'], \
-		      add_quote(position['answer']), add_quote(live_place['answer']), where['answer'], status
+		      add_quote(position['answer']), add_quote(live_place['answer']), where['answer'], status, est_time
 		str='%d,%s,%s.%s,%s\n' %(i+1, user_profile['name'], user_profile['email'], wechat_id['answer'], hobbies['answer'])
 	except :
-		print i+1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), status
+		print i+1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), status, est_time
 		str='%d,%s,%s\n' % (i+1, user_profile['name'], user_profile['email'])
 '''for i in range (response.json()["pagination"]["object_count"]):
 	user_profile=response.json()['attendees'][i]['profile']
