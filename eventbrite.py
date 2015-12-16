@@ -99,12 +99,13 @@ for i in range (response.json()["pagination"]["object_count"]):
 		print i+1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id['answer'], first_time['answer'], \
 		      '"'+hobbies['answer'].replace(',', ' ').rstrip()+'"', '"'+books['answer'].replace(',', ' ').rstrip()+'"', company['answer'], \
 		      add_quote(position['answer']), add_quote(live_place['answer']), where['answer'],status, date
-		str='%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s.%s,%s\n' %(i+1, user_profile['name'], user_profile['email'], wechat_id['answer'], first_time['answer'], \
+		str='%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' %(i+1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id['answer'], first_time['answer'], \
 			hobbies['answer'].replace(',', ' ').rstrip(), books['answer'].replace(',', ' ').rstrip(), company['answer'], position['answer'], \
-			live_place['answer'], where['answer'],status, str(date))
+			live_place['answer'], where['answer'],status, date)
 	except :
 		print i+1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), where['answer'], status, date
-		str='%d,%s,%s.%s,%s,%s,%s,%s\n' % (i+1, user_profile['name'], user_profile['email'], first_time['answer'], first_attend['answer'], where['answer'], status, str(date))
+		str='%d,%s,%s.%s,%s,%s,%s,%s\n' % (i+1, user_profile['name'], user_profile['email'], first_time['answer'], first_attend['answer'].decode('utf-8'),\
+		 where['answer'], status, date)
 
 	with open(filename, 'a+') as  output_file:
 			output_file.write(str)
