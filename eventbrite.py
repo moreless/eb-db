@@ -106,6 +106,5 @@ for i in range (response.json()["pagination"]["object_count"]):
 		print i+1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), where['answer'], status, date
 		str='%d,%s,%s.%s,%s,%s,%s,%s\n' % (i+1, user_profile['name'], user_profile['email'], first_time['answer'], first_attend['answer'], where['answer'], status, str(date))
 
-
 	with open(filename, 'a+') as  output_file:
 			output_file.write(str)
