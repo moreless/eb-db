@@ -10,6 +10,58 @@ from datetime import datetime, timedelta
 import pymongo
 from pymongo import MongoClient
 
+def get_register_data(response, i, filename, flag):
+    user_profile = response.json()['attendees'][i]['profile']
+    answers = response.json()['attendees'][i]['answers']
+    status = response.json()['attendees'][i]['barcodes'][0]['status']
+    est_time = response.json()['attendees'][i]['barcodes'][0]['created']
+    first_time = answers[3]
+    wechat_id = answers[4]
+    hobbies = answers[5]
+    books = answers[6]
+    company = answers[7]
+    position = answers[8]
+    first_attend = answers[9]
+    live_place = answers[10]
+    where = answers[1]
+    utc_date = dateutil.parser.parse(est_time)
+    date = utc_to_local(utc_date)
+    
+    if 'answer' in hobbies:
+      hobbies_str = hobbies['answer'].replace(',', ' ').rstrip()
+    else:
+      hobbies_str = ''      
+    
+    if 'answer' in first_attend:
+      firstTime_str = first_attend['answer'].decode('utf-8')
+    else:
+      firstTime_str = ''  
+    
+    collection.insert({
+                       'name' : user_profile['name'],
+                       'email': user_profile['email'],
+                       'first time': firstTime_str,
+                       'hobby': hobbies_str,
+                       'Total attended': []
+                       })
+    if flag:
+      i=i+50
+    try :
+        wechat_id['answer']
+        hobbies['answer']
+        print i + 1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id['answer'], first_time['answer'], \
+              '"' + hobbies['answer'].replace(',', ' ').rstrip() + '"', '"' + books['answer'].replace(',', ' ').rstrip() + '"', company['answer'], \
+              add_quote(position['answer']), add_quote(live_place['answer']), where['answer'], status, date
+        str = '%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (i + 1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id['answer'], first_time['answer'], \
+            hobbies['answer'].replace(',', ' ').rstrip(), books['answer'].replace(',', ' ').rstrip(), company['answer'], position['answer'], \
+            live_place['answer'], where['answer'], status, date)
+    except :
+        print i + 1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), where['answer'], status, date
+        str = '%d,%s,%s.%s,%s,%s,%s,%s\n' % (i + 1, user_profile['name'], user_profile['email'], first_time['answer'], first_attend['answer'].decode('utf-8'), \
+         where['answer'], status, date)
+    with open(filename, 'a+') as  output_file:
+        output_file.write(str)
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -49,6 +101,16 @@ response = requests.get(
     verify=True,  # Verify SSL certificate
 )
 
+if (response.json()["pagination"]["object_count"]>50):
+  response2 = requests.get(
+    # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
+    "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
+    headers={
+        "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+    },
+    verify=True,  # Verify SSL certificate
+  )
+
 #Initialize the database.        
 client = MongoClient('localhost', 27017)
 db = client['ValleyRain']
@@ -85,60 +147,12 @@ with open(filename, 'a+') as  output_file:
         print i+1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), status, date
         str='%d,%s,%s\n' % (i+1, user_profile['name'], user_profile['email'])'''
 
-
-
 for i in range (response.json()["pagination"]["object_count"]):
-    user_profile = response.json()['attendees'][i]['profile']
-    answers = response.json()['attendees'][i]['answers']
-    status = response.json()['attendees'][i]['barcodes'][0]['status']
-    est_time = response.json()['attendees'][i]['barcodes'][0]['created']
-    first_time = answers[3]
-    wechat_id = answers[4]
-    hobbies = answers[5]
-    books = answers[6]
-    company = answers[7]
-    position = answers[8]
-    first_attend = answers[9]
-    live_place = answers[10]
-    where = answers[1]
-    utc_date = dateutil.parser.parse(est_time)
-    date = utc_to_local(utc_date)
-    
-    if 'answer' in hobbies:
-      hobbies_str = hobbies['answer'].replace(',', ' ').rstrip()
-    else:
-      hobbies_str = ''      
-    
-    if 'answer' in first_attend:
-      firstTime_str = first_attend['answer'].decode('utf-8')
-    else:
-      firstTime_str = ''  
-    
-    collection.insert({
-                       'name' : user_profile['name'],
-                       'email': user_profile['email'],
-                       'first time': firstTime_str,
-                       'hobby': hobbies_str,
-                       'Total attended': []
-                       })
+  if (i<50):
+    get_register_data(response, i, filename, False)
+  else:
+    get_register_data(response2, i-50, filename, True)
   
-    try :
-        wechat_id['answer']
-        hobbies['answer']
-        print i + 1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id['answer'], first_time['answer'], \
-              '"' + hobbies['answer'].replace(',', ' ').rstrip() + '"', '"' + books['answer'].replace(',', ' ').rstrip() + '"', company['answer'], \
-              add_quote(position['answer']), add_quote(live_place['answer']), where['answer'], status, date
-        str = '%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (i + 1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id['answer'], first_time['answer'], \
-            hobbies['answer'].replace(',', ' ').rstrip(), books['answer'].replace(',', ' ').rstrip(), company['answer'], position['answer'], \
-            live_place['answer'], where['answer'], status, date)
-    except :
-        print i + 1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), where['answer'], status, date
-        str = '%d,%s,%s.%s,%s,%s,%s,%s\n' % (i + 1, user_profile['name'], user_profile['email'], first_time['answer'], first_attend['answer'].decode('utf-8'), \
-         where['answer'], status, date)
-
-    with open(filename, 'a+') as  output_file:
-            output_file.write(str)
-      
   # Email
   # Name
   # First time
