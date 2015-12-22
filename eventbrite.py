@@ -37,13 +37,28 @@ def get_register_data(response, i, filename, flag):
     else:
       firstTime_str = ''  
     
-    collection.insert({
+    if (collection.find({'email': user_profile['email']}).count() == 0) :
+      collection.insert({
                        'name' : user_profile['name'],
                        'email': user_profile['email'],
                        'first time': firstTime_str,
                        'hobby': hobbies_str,
-                       'Total attended': []
+                       'Total attended': 1
                        })
+    else:
+      collection.update_one(
+          {'email': user_profile['email']},
+          {
+            "$set" :  {'name' : user_profile['name'],
+                       'email': user_profile['email'],
+                       'first time': firstTime_str,
+                       'hobby': hobbies_str,
+                      },
+            "$inc": {'Total attended': 1}
+          }
+      )
+
+
     if flag:
       i=i+50
     try :
@@ -59,7 +74,7 @@ def get_register_data(response, i, filename, flag):
         print i + 1, user_profile['name'], user_profile['email'], first_time['answer'], add_quote(first_attend['answer']), where['answer'], status, date
         str = '%d,%s,%s.%s,%s,%s,%s,%s\n' % (i + 1, user_profile['name'], user_profile['email'], first_time['answer'], first_attend['answer'].decode('utf-8'), \
          where['answer'], status, date)
-    with open(filename, 'a+') as  output_file:
+    with open(filename, 'a') as  output_file:
         output_file.write(str)
 
 reload(sys)
@@ -116,7 +131,7 @@ client = MongoClient('localhost', 27017)
 db = client['ValleyRain']
 collection = db['UserProfile']    
     
-with open(filename, 'a+') as  output_file:
+with open(filename, 'a') as  output_file:
             output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')
 
 '''for i in range (response.json()["pagination"]["object_count"]):
