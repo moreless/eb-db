@@ -20,7 +20,7 @@ def utc_to_local(utc_dt):
 def add_quote(str):
 	return '"'+str+'"'
 
-filename = 'output.csv'
+filename = 'guest.csv'
 
 response_event = requests.get(
     "https://www.eventbriteapi.com/v3/users/me/owned_events/",
