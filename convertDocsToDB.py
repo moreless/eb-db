@@ -56,9 +56,10 @@ with open ('roster.csv') as f:
     for row in f_csv:
         email    = row[2]
         
+        #Validate the email address format.
         EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
         if not EMAIL_REGEX.match(email):
-            print id
+            #print id
             continue
         
         wechatID = row[1]
@@ -67,7 +68,8 @@ with open ('roster.csv') as f:
         job      = row[5]
         hobby    = row[6]
         
-        
+        #Will update the record if existed.
+        #Will create a new one if not existed.
         collection.update_one(
                               {'email': email},
                               {
@@ -84,7 +86,7 @@ with open ('roster.csv') as f:
                                True
                               )
         id = id + 1
-        
+    f.close()
         
         
         
