@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import pymongo
 from pymongo import MongoClient
 
-def get_register_data(response, i, filename, flag):
+def get_register_data(response, i, filename, event_name, flag):
 	dataEntry    = response.json()['attendees'][i]
 	
 	user_profile = dataEntry['profile']
@@ -47,9 +47,9 @@ def get_register_data(response, i, filename, flag):
 	userRecord = collection.find_one({'email': email})
 	
 	if not userRecord:
-	  attended = [{eventID:status}]
+	  attended = [{event_name:status}]
 	  id = collection.count() + 1
-	  first = eventID
+	  first = event_name
 		 
 	  collection.insert({
 			   'name'    : name,
@@ -65,9 +65,9 @@ def get_register_data(response, i, filename, flag):
 	  print "Successfully insert a new record."
 	else:
 		attended = userRecord['attended']
-		attended.append({eventID:status})
+		attended.append({event_name:status})
 		if userRecord['first'] == '':
-			first = eventID
+			first = event_name
 			collection.update_one(
 		          {'email': email},
 		          {
@@ -176,6 +176,8 @@ response_event = requests.get(
 for j in range(response_event.json()["pagination"]["object_count"]):
 	pass
 	print response_event.json()["events"][j]["name"]["text"]
+	#event_name = response_event.json()["events"][j]["name"]["text"]
+	event_name= re.findall(u'(《.+?》)', response_event.json()["events"][j]["name"]["text"])
 
 	# Get the information for each page. 
 	# TODO: How about n > 100?
@@ -202,6 +204,6 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 	# Get the information for each attendees. 
 	for i in range (response.json()["pagination"]["object_count"]):
 		if (i<50):
-			get_register_data(response, i, filename, False)
+			get_register_data(response, i, filename, event_name[0], False)
 		else:
-			get_register_data(response2, i-50, filename, True)
+			get_register_data(response2, i-50, filename, event_name[0], True)
