@@ -64,7 +64,6 @@ def get_register_data(response, i, filename, flag):
 			   })
 	  print "Successfully insert a new record."
 	else:
-		print userRecord['attended']
 		attended = userRecord['attended']
 		attended.append({eventID:status})
 		if userRecord['first'] == '':
