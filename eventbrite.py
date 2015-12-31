@@ -7,8 +7,8 @@ import calendar
 import dateutil.parser
 from datetime import datetime, timedelta
 
-import pymongo
-from pymongo import MongoClient
+#import pymongo
+#from pymongo import MongoClient
 
 def get_register_data(response, i, filename, flag):
     user_profile = response.json()['attendees'][i]['profile']
@@ -37,7 +37,7 @@ def get_register_data(response, i, filename, flag):
     else:
       firstTime_str = ''  
     
-    if (collection.find({'email': user_profile['email']}).count() == 0) :
+    '''if (collection.find({'email': user_profile['email']}).count() == 0) :
       collection.insert({
                        'name' : user_profile['name'],
                        'email': user_profile['email'],
@@ -56,7 +56,7 @@ def get_register_data(response, i, filename, flag):
                       },
             "$inc": {'Total attended': 1}
           }
-      )
+      )'''
 
 
     if flag:
@@ -127,9 +127,9 @@ if (response.json()["pagination"]["object_count"]>50):
   )
 
 #Initialize the database.        
-client = MongoClient('localhost', 27017)
+'''client = MongoClient('localhost', 27017)
 db = client['ValleyRain']
-collection = db['UserProfile']    
+collection = db['UserProfile']'''
     
 with open(filename, 'a') as  output_file:
             output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')
