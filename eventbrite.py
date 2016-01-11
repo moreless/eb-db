@@ -102,14 +102,14 @@ response_event = requests.get(
 )
 for j in range(response_event.json()["pagination"]["object_count"]):
     pass
-print response_event.json()["events"][j]["name"]["text"]
+print response_event.json()["events"][j-1]["name"]["text"]
 
 # mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
 # print mo[0]
 
 response = requests.get(
     # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
-    "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/",
+    "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j-1]["id"] + "/attendees/",
     headers={
         "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
     },
@@ -119,7 +119,7 @@ response = requests.get(
 if (response.json()["pagination"]["object_count"]>50):
   response2 = requests.get(
     # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
-    "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
+    "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j-1]["id"] + "/attendees/?page=2",
     headers={
         "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
     },
@@ -132,7 +132,7 @@ db = client['ValleyRain']
 collection = db['UserProfile']'''
     
 with open(filename, 'a') as  output_file:
-            output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')
+            output_file.write(response_event.json()["events"][j-1]["name"]["text"] + '\n')
 
 '''for i in range (response.json()["pagination"]["object_count"]):
     user_profile=response.json()['attendees'][i]['profile']

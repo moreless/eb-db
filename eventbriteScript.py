@@ -21,10 +21,10 @@ def get_register_data(response, i, filename, event_name, flag):
 	'''
 		The following fields are from 'profile'.
 	'''
-	name  = user_profile['name']
+	name  = user_profile['name'].title()
 	
 	if 'email' in user_profile:
-		email = user_profile['email']
+		email = user_profile['email'].lower()
 	else:
 		email = ''
 	
@@ -174,7 +174,11 @@ response_event = requests.get(
 
 # Get the attendees for each events. 
 for j in range(response_event.json()["pagination"]["object_count"]):
-	pass
+
+	#comment for traverse all events  
+	if j<response_event.json()["pagination"]["object_count"]-1:
+		continue  
+
 	print response_event.json()["events"][j]["name"]["text"]
 	#event_name = response_event.json()["events"][j]["name"]["text"]
 	event_name= re.findall(u'(《.+?》)', response_event.json()["events"][j]["name"]["text"])
