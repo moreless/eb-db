@@ -27,10 +27,10 @@ def findAnswers(answers):
       if 'answer' in entry:
         ans[0] = entry['answer']
         #print where
-    elif re.search('First Time Coming', entry['question'], re.I):
+    if re.search('First time com', entry['question'], re.I):
       if 'answer' in entry:
         ans[1] = entry['answer']
-        #print first_time
+        #print ans[1]
     if re.search('wechat ID', entry['question'], re.I):
       if 'answer' in entry:
         ans[2] = entry['answer']
@@ -120,6 +120,7 @@ def get_register_data(response, i, filename, flag):
 
     if flag:
       i=i+50
+
     if (first_time == 'Yes'):
         print i + 1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id, first_time, \
               '"' + hobbies.replace(',', ' ').rstrip() + '"', '"' + books.replace(',', ' ').rstrip() + '"', company, \
@@ -157,8 +158,16 @@ response_event = requests.get(
     },
     verify=True,  # Verify SSL certificate
 )
+
 for j in range(response_event.json()["pagination"]["object_count"]):
     pass
+
+lasttime=response_event.json()["pagination"]["object_count"]+17
+print 'First time is 18 %s' %(response_event.json()["events"][0]["name"]["text"])
+print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"]["text"])
+time=raw_input('Input the time you want:')
+
+j = int(time)-18
 print response_event.json()["events"][j]["name"]["text"]
 
 # mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
