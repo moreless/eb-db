@@ -165,9 +165,10 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 lasttime=response_event.json()["pagination"]["object_count"]+17
 print 'First time is 18 %s' %(response_event.json()["events"][0]["name"]["text"])
 print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"]["text"])
-time=raw_input('Input the time you want:')
+#time=raw_input('Input the time you want:')
 
-j = int(time)-18
+#j = int(time)-18
+j-=1
 print response_event.json()["events"][j]["name"]["text"]
 
 # mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
@@ -182,7 +183,21 @@ response = requests.get(
     verify=True,  # Verify SSL certificate
 )
 
-if (response.json()["pagination"]["object_count"]>50):
+'''"pagination": {
+        "object_count": 17, 
+        "page_number": 1, 
+        "page_size": 50, 
+        "page_count": 1
+    },'''
+
+if 'object_count' in response.json()["pagination"]:
+  object_count= response.json()["pagination"]["object_count"]
+  #print object_count
+else:
+  object_count=0
+  print 'nobody registered yet.'
+
+if (object_count>50):
   response2 = requests.get(
     # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
     "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
@@ -200,7 +215,7 @@ collection = db['UserProfile']'''
 with open(filename, 'a') as  output_file:
             output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')
 
-for i in range (response.json()["pagination"]["object_count"]):
+for i in range (object_count):
   if (i<50):
     get_register_data(response, i, filename, False)
   else:
