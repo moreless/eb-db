@@ -192,7 +192,7 @@ response = requests.get(
 
 if 'object_count' in response.json()["pagination"]:
   object_count= response.json()["pagination"]["object_count"]
-  #print object_count
+  print object_count, "registered"
 else:
   object_count=0
   print 'nobody registered yet.'
