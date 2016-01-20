@@ -10,6 +10,36 @@ from datetime import datetime, timedelta
 import pymongo
 from pymongo import MongoClient
 
+def findAnswers(answers):
+	'''
+		This funciton is used to find the wechatID, hobby, company and job.
+	'''
+	ans=['','','','']
+	if not answers:
+		print 'Errors! No answers found in this entry.\n'
+		return
+
+	for entry in answers:
+		wechatID = ''
+		hobby    = ''
+		company  = ''
+		job      = ''
+
+		if re.search('wechat ID', entry['question'], re.I):
+			if 'answer' in entry:
+				ans[0] = entry['answer']
+		elif re.search('Hobbies', entry['question'], re.I):
+			if 'answer' in entry:
+				ans[1] = entry['answer']
+		elif re.search('company', entry['question'], re.I):
+			if 'answer' in entry:
+				ans[2] = entry['answer']
+		elif re.search('Position', entry['question'], re.I):
+			if 'answer' in entry:
+				ans[3] = entry['answer']
+	
+	return ans
+
 def get_register_data(response, i, filename, event_name, flag):
 	dataEntry    = response.json()['attendees'][i]
 	
@@ -36,8 +66,13 @@ def get_register_data(response, i, filename, event_name, flag):
 		The following fields are from 'answers'.
 	'''
 	
-	wechatID, hobby, company, job = findAnswers(answers)
-	
+	ans = findAnswers(answers)
+	wechatID= ans[0]
+	hobby=ans[1]
+	company=ans[2]
+	job=ans[3]
+
+	#print wechatID, hobby,company,job
 	'''
 		The following fields are inferred from records. 
 	'''
@@ -47,7 +82,8 @@ def get_register_data(response, i, filename, event_name, flag):
 	userRecord = collection.find_one({'email': email})
 	
 	if not userRecord:
-	  attended = [{event_name:status}]
+	  attended={}
+	  attended[event_name]=status
 	  id = collection.count() + 1
 	  first = event_name
 		 
@@ -61,18 +97,23 @@ def get_register_data(response, i, filename, event_name, flag):
                'hobby'   : hobby,
                'attended': attended,
                'ID'      : id,
+               'attend_times' : 1,
 			   })
 	  print "Successfully insert a new record."
 	else:
+		#print userRecord
 		attended = userRecord['attended']
-		attended.append({event_name:status})
+		attended[event_name]=status
+		attend_times = len(attended.keys())
 		if userRecord['first'] == '':
 			first = event_name
 			collection.update_one(
 		          {'email': email},
 		          {
-		            "$set" :  {'first' : first,
+		            "$set" :  {'name': name,
+		                       'first' : first,
 		                       'attended': attended,
+		                       'attend_times' : attend_times,
 		                      },
 		          }
 		      )
@@ -80,7 +121,10 @@ def get_register_data(response, i, filename, event_name, flag):
 			collection.update_one(
 		          {'email': email},
 		          {
-		            "$set" :  {'attended': attended,
+		            "$set" :  {
+		                      'name': name,
+		                      'attended': attended,
+		                      'attend_times' : attend_times,
 		                      },
 		          }
 		      )
@@ -103,35 +147,7 @@ def get_register_data(response, i, filename, event_name, flag):
 	with open(filename, 'a+') as  output_file:
 		output_file.write(str)
 
-def findAnswers(answers):
-	'''
-		This funciton is used to find the wechatID, hobby, company and job.
-	'''
-	
-	if not answers:
-		print 'Errors! No answers found in this entry.\n'
-		return 
-	
-	for entry in answers:
-		wechatID = ''
-		hobby    = ''
-		company  = ''
-		job      = ''
-		
-		if re.search('wechat ID', entry['question'], re.I):
-			if 'answer' in entry:
-				wechatID = entry['answer']
-		elif re.search('Hobbies', entry['question'], re.I):
-			if 'answer' in entry:
-				hobby = entry['answer']
-		elif re.search('company', entry['question'], re.I):
-			if 'answer' in entry:
-				company = entry['answer']
-		elif re.search('Position', entry['question'], re.I):
-			if 'answer' in entry:
-				job = entry['answer']
-	
-	return wechatID, hobby, company, job
+
 	
 def utc_to_local(utc_dt):
     # get integer timestamp to avoid precision lost

@@ -79,13 +79,15 @@ with open ('roster.csv') as f:
                                           'job':      job,
                                           'first':    '',
                                           'hobby':    hobby,
-                                          'attended': [],
+                                          'attended': {},
                                           'ID':       id,
+                                          'attend_times': 1
                                           }
                                },
                                True
                               )
         id = id + 1
+    print "Write doc to db done!"
     f.close()
         
         

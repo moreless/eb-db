@@ -165,10 +165,10 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 lasttime=response_event.json()["pagination"]["object_count"]+17
 print 'First time is 18 %s' %(response_event.json()["events"][0]["name"]["text"])
 print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"]["text"])
-#time=raw_input('Input the time you want:')
+time=raw_input('Input the time you want:')
 
-#j = int(time)-18
-j-=1
+j = int(time)-18
+#j-=2
 print response_event.json()["events"][j]["name"]["text"]
 
 # mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
