@@ -149,12 +149,16 @@ def add_quote(str):
     return '"' + str + '"'
 
 filename = 'output.csv'
+conf_file = 'eb.conf'
+f = open(conf_file, 'r')
+for key in f: 
+  print key
 
 response_event = requests.get(
     "https://www.eventbriteapi.com/v3/users/me/owned_events/",
 
     headers={
-        "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+        "Authorization": key,
     },
     verify=True,  # Verify SSL certificate
 )
@@ -165,10 +169,10 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 lasttime=response_event.json()["pagination"]["object_count"]+17
 print 'First time is 18 %s' %(response_event.json()["events"][0]["name"]["text"])
 print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"]["text"])
-time=raw_input('Input the time you want:')
+#time=raw_input('Input the time you want:')
 
-j = int(time)-18
-#j-=2
+#j = int(time)-18
+j-=1
 print response_event.json()["events"][j]["name"]["text"]
 
 # mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
@@ -178,7 +182,7 @@ response = requests.get(
     # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
     "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/",
     headers={
-        "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+        "Authorization": key,
     },
     verify=True,  # Verify SSL certificate
 )
@@ -202,7 +206,7 @@ if (object_count>50):
     # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
     "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
     headers={
-        "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+        "Authorization": key,
     },
     verify=True,  # Verify SSL certificate
   )
