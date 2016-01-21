@@ -64,7 +64,8 @@ def crossProd(dict1, dict2):
             res = res + a * b
     
     return res
+
+while(1):
+    name=raw_input('who do you want to check:')
+    print findFriend(name)        
             
-print findFriend('Haoting Luo')        
-            
-        
