@@ -177,13 +177,19 @@ sys.setdefaultencoding('utf-8')
 
 filename = 'guest.csv'
 
+conf_file='eb.conf'
+f = open(conf_file, 'r')
+for key in f: 
+  print key
+
+
 # Get the whole events response.
 
 response_event = requests.get(
     "https://www.eventbriteapi.com/v3/users/me/owned_events/",
 
     headers = {
-        "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+        "Authorization": key,
     },
     verify = True,  # Verify SSL certificate
 )
@@ -204,7 +210,7 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 	response = requests.get(
 	    "https://www.eventbriteapi.com/v3/events/"+response_event.json()["events"][j]["id"]+"/attendees/",
 	    headers = {
-	        "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+	        "Authorization": key,
 	    },
 	    verify = True,  
 	)
@@ -213,7 +219,7 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 		response2 = requests.get(
 		"https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
 		headers={
-		    "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+		    "Authorization": key,
 		},
 		verify=True,  
 		)

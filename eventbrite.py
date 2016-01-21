@@ -149,6 +149,7 @@ def add_quote(str):
     return '"' + str + '"'
 
 filename = 'output.csv'
+
 conf_file = 'eb.conf'
 f = open(conf_file, 'r')
 for key in f: 
