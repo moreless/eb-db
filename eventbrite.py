@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/python
 # coding: utf-8
 
 import requests
@@ -86,6 +86,8 @@ def get_register_data(response, i, filename, flag):
     first_attend =ans[7]
     live_place = ans [8]
 
+    if (user_profile['name'] == 'Mosha Qi') :
+       print ""
     if 'answer' in hobbies:
       hobbies_str = hobbies['answer'].replace(',', ' ').rstrip()
     else:

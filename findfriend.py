@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# coding: utf-8
+
 import numpy as np
 import pymongo
 from pymongo import MongoClient
@@ -10,6 +13,10 @@ collection = db['UserProfile']
 
 def findFriend(username):
     record = collection.find_one({'name':username})
+    if not record:
+ 	print 'Unknown user'
+     	return 
+
     if record['attend_times'] <= 1:
         print 'User %s just attended once. Need more data.' %(username)
         return
@@ -67,5 +74,12 @@ def crossProd(dict1, dict2):
 
 while(1):
     name=raw_input('who do you want to check:')
-    print findFriend(name)        
+    if name == 'exit':
+       break
+
+    name= name.title()
+    #Detect he name is in the database or not.
+    result = findFriend(name) 
+    if result:
+       print result
             
