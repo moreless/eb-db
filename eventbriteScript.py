@@ -181,7 +181,7 @@ filename = 'guest.csv'
 conf_file='eb.conf'
 f = open(conf_file, 'r')
 for key in f: 
-  print key
+  key = key.rstrip()
 
 
 # Get the whole events response.
@@ -195,12 +195,14 @@ response_event = requests.get(
     verify = True,  # Verify SSL certificate
 )
 
+notprintall = True
+
 # Get the attendees for each events. 
 for j in range(response_event.json()["pagination"]["object_count"]):
 
-	#comment for traverse all events  
-	if j<response_event.json()["pagination"]["object_count"]-1:
-		continue  
+	#comment for traverse all events
+	if j<response_event.json()["pagination"]["object_count"]-1 and notprintall:
+		continue
 
 	print response_event.json()["events"][j]["name"]["text"]
 	#event_name = response_event.json()["events"][j]["name"]["text"]
