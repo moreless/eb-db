@@ -6,6 +6,7 @@ import pymongo
 from pymongo import MongoClient
 import operator
 from math import sqrt
+from pprint import pprint
         
 client = MongoClient('localhost', 27017)
 db = client['ValleyRain']
@@ -32,7 +33,8 @@ def findFriend(username):
         normPairAttendDict = calNorm(pairAttendDict)
         crossProduct = crossProd(attendDict, pairAttendDict)
         similarityScore = crossProduct / (normAttendDict * normPairAttendDict)
-        similarityScoreDict[entry['name']] = similarityScore
+        if similarityScore:
+            similarityScoreDict[entry['name']] = similarityScore
         
     return sorted(similarityScoreDict.items(), key=operator.itemgetter(1), reverse=True)[0:-1]
         
@@ -73,7 +75,7 @@ def crossProd(dict1, dict2):
     return res
 
 while(1):
-    name=raw_input('who do you want to check:')
+    name=raw_input("Who do you want to check('exit' to exit):")
     if name == 'exit':
        break
 
@@ -81,5 +83,5 @@ while(1):
     #Detect he name is in the database or not.
     result = findFriend(name) 
     if result:
-       print result
+       pprint(result)
             

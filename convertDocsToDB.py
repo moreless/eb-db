@@ -30,6 +30,7 @@
 7. 对读书会的小伙伴们，还有什么想说的吗？
 8. 喜欢的书籍类别，以及希望在图书会推广的书目
 9. 居住城市（以便大家carpool)
+10. 哪一期
 '''
 
 import csv
@@ -50,11 +51,11 @@ collection = db['UserProfile']
 #User ID in the database.
 id = 1
 
-with open ('roster.csv') as f:
+with open ('roster1.csv') as f:
     f_csv = csv.reader(f)
     headers = next(f_csv)
     for row in f_csv:
-        email    = row[2]
+        email    = row[2].lower()
         
         #Validate the email address format.
         EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
@@ -63,13 +64,19 @@ with open ('roster.csv') as f:
             continue
         
         wechatID = row[1]
-        name     = row[3]
+        name     = row[3].title()
         company  = row[4] 
         job      = row[5]
         hobby    = row[6]
-        
+        books    = row[8] 
+        city     = row[9]
+        first    = row[10]
+        print name, books,hobby, first
+
         #Will update the record if existed.
         #Will create a new one if not existed.
+        attended={}
+        attended[first]="Checked In"
         collection.update_one(
                               {'email': email},
                               {
@@ -77,9 +84,11 @@ with open ('roster.csv') as f:
                                           'wechatID': wechatID,
                                           'company':  company,
                                           'job':      job,
-                                          'first':    '',
+                                          'first':    first,
                                           'hobby':    hobby,
-                                          'attended': {},
+                                          'books':    books,
+                                          'attended': attended,
+                                          'city' :    city,
                                           'ID':       id,
                                           'attend_times': 1
                                           }

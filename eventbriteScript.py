@@ -11,11 +11,13 @@ from datetime import datetime, timedelta
 import pymongo
 from pymongo import MongoClient
 
+notprintall = False
+
 def findAnswers(answers):
 	'''
 		This funciton is used to find the wechatID, hobby, company and job.
 	'''
-	ans=['','','','']
+	ans=['','','','','','']
 	if not answers:
 		print 'Errors! No answers found in this entry.\n'
 		return
@@ -38,6 +40,12 @@ def findAnswers(answers):
 		elif re.search('Position', entry['question'], re.I):
 			if 'answer' in entry:
 				ans[3] = entry['answer']
+		elif re.search('Categroies of Books', entry['question'], re.I):
+			if 'answer' in entry:
+				ans[4] = entry['answer']
+		elif re.search('The city you live', entry['question'], re.I):
+			if 'answer' in entry:
+				ans[5] = entry['answer']
 	
 	return ans
 
@@ -72,6 +80,8 @@ def get_register_data(response, i, filename, event_name, flag):
 	hobby=ans[1]
 	company=ans[2]
 	job=ans[3]
+	books=ans[4]
+	city = ans[5]
 
 	#print wechatID, hobby,company,job
 	'''
@@ -96,8 +106,10 @@ def get_register_data(response, i, filename, event_name, flag):
                'job'     : job,
                'first'   : first,
                'hobby'   : hobby,
+               'books'   : books,
                'attended': attended,
                'ID'      : id,
+               'city'    : city,
                'attend_times' : 1,
 			   })
 	  print "Successfully insert a new record."
@@ -195,7 +207,6 @@ response_event = requests.get(
     verify = True,  # Verify SSL certificate
 )
 
-notprintall = True
 
 # Get the attendees for each events. 
 for j in range(response_event.json()["pagination"]["object_count"]):
