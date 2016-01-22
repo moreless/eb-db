@@ -39,6 +39,8 @@ import re
 import pymongo
 from pymongo import MongoClient
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 '''
     Initialize the DataBase
@@ -70,31 +72,45 @@ with open ('roster1.csv') as f:
         hobby    = row[6]
         books    = row[8] 
         city     = row[9]
-        first    = row[10]
-        print name, books,hobby, first
+        first    = row[10].decode('utf-8')
+        print name, email, books,hobby, first
 
         #Will update the record if existed.
         #Will create a new one if not existed.
-        attended={}
-        attended[first]="Checked In"
-        collection.update_one(
-                              {'email': email},
-                              {
-                               "$set" :  {'name' :    name,
-                                          'wechatID': wechatID,
-                                          'company':  company,
-                                          'job':      job,
-                                          'first':    first,
-                                          'hobby':    hobby,
-                                          'books':    books,
-                                          'attended': attended,
-                                          'city' :    city,
-                                          'ID':       id,
-                                          'attend_times': 1
-                                          }
-                               },
-                               True
-                              )
+        userRecord = collection.find_one({'email': email})
+
+        if not userRecord:
+          attended={}
+          attended[first]="Checked In"
+          #print attended
+          collection.insert({'name'    : name,
+                                 'email'   : email,
+                                 'wechatID': wechatID,
+                                 'company' : company,
+                                 'job'     : job,
+                                 'first'   : first,
+                                 'hobby'   : hobby,
+                                 'books'   : books,
+                                 'attended': attended,
+                                 'ID'      : id,
+                                 'city'    : city,
+                                 'attend_times' : 1,
+                                })
+        else:
+              attended = userRecord['attended']
+              attended[first]='Checked In'
+              print attended
+              attend_times = len(attended.keys())
+              collection.update_one(
+              {'email': email},
+              {
+                "$set" :  {
+                          'name': name,
+                          'attended': attended,
+                          'attend_times' : attend_times,
+                          },
+              }
+          )
         id = id + 1
     print "Write doc to db done!"
     f.close()
