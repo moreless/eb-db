@@ -54,11 +54,16 @@ def add_quote(str):
 
 filename = 'guest.csv'
 
+conf_file='eb.conf'
+f = open(conf_file, 'r')
+for key in f:
+  key = key.rstrip()
+
 response_event = requests.get(
     "https://www.eventbriteapi.com/v3/users/me/owned_events/",
 
     headers = {
-        "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+        "Authorization": key,
     },
     verify = True,  # Verify SSL certificate
 )
@@ -73,7 +78,7 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 	    #"https://www.eventbriteapi.com/v3/users/me/owned_events/",
 	    "https://www.eventbriteapi.com/v3/events/"+response_event.json()["events"][j]["id"]+"/attendees/",
 	    headers = {
-	        "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+	        "Authorization": key,
 	    },
 	    verify = True,  # Verify SSL certificate
 	)
@@ -83,7 +88,7 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 		# "https://www.eventbriteapi.com/v3/users/me/owned_events/",
 		"https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
 		headers={
-		    "Authorization": "Bearer 76IZEIMV6O2VAOYUCKOE",
+		    "Authorization": key,
 		},
 		verify=True,  # Verify SSL certificate
 		)
