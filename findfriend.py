@@ -36,7 +36,7 @@ def findFriend(username):
         if similarityScore:
             similarityScoreDict[entry['name']] = similarityScore
         
-    return sorted(similarityScoreDict.items(), key=operator.itemgetter(1), reverse=True)[0:-1]
+    return sorted(similarityScoreDict.items(), key=operator.itemgetter(1), reverse=True)[0:20]
         
 def calNorm(dict):
     res = 0;
