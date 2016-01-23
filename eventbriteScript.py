@@ -17,7 +17,7 @@ def findAnswers(answers):
 	'''
 		This funciton is used to find the wechatID, hobby, company and job.
 	'''
-	ans=['','','','','','']
+	ans=['','','','','','','']
 	if not answers:
 		print 'Errors! No answers found in this entry.\n'
 		return
@@ -46,6 +46,9 @@ def findAnswers(answers):
 		elif re.search('The city you live', entry['question'], re.I):
 			if 'answer' in entry:
 				ans[5] = entry['answer']
+		if re.search('First time com', entry['question'], re.I):
+		    if 'answer' in entry:
+			ans[6] = entry['answer']
 	
 	return ans
 
@@ -82,6 +85,7 @@ def get_register_data(response, i, filename, event_name, flag):
 	job=ans[3]
 	books=ans[4]
 	city = ans[5]
+	first_time = ans[6]
 
 	#print wechatID, hobby,company,job
 	'''
@@ -118,6 +122,22 @@ def get_register_data(response, i, filename, event_name, flag):
 		attended = userRecord['attended']
 		attended[event_name]=status
 		attend_times = len(attended.keys())
+		if first_time == 'Yes':  #for some one registered using gform before but forgot.
+			collection.update_one(
+		          {'email': email},
+		          {
+		            "$set" :  {'name': name,
+		                       'wechatID' : wechatID,
+		                       'hobby'  : hobby,
+		                       'company' : company,
+		                       'job'     : job,
+		                       'books'   : books,
+		                       'attended': attended,
+		                       'city'    : city,
+		                       'attend_times' : attend_times,
+		                      },
+		          }
+		      )
 		if userRecord['first'] == '':
 			first = event_name
 			collection.update_one(
@@ -220,7 +240,7 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 	event_name= re.findall(u'(《.+?》)', response_event.json()["events"][j]["name"]["text"])
 
 	# Get the information for each page. 
-	# TODO: How about n > 100?
+	# TODO: How about n > 100? mod 50
 	response = requests.get(
 	    "https://www.eventbriteapi.com/v3/events/"+response_event.json()["events"][j]["id"]+"/attendees/",
 	    headers = {
@@ -229,7 +249,15 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 	    verify = True,  
 	)
 
-	if (response.json()["pagination"]["object_count"]>50):
+	if 'object_count' in response.json()["pagination"]:
+		object_count= response.json()["pagination"]["object_count"]
+		print object_count, "registered"
+	else:
+		object_count=0
+		print 'nobody registered yet.'
+
+	if (object_count>50):
+
 		response2 = requests.get(
 		"https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
 		headers={
@@ -242,7 +270,7 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 				output_file.write(response_event.json()["events"][j]["name"]["text"]+'\n')
 
 	# Get the information for each attendees. 
-	for i in range (response.json()["pagination"]["object_count"]):
+	for i in range (object_count):
 		if (i<50):
 			get_register_data(response, i, filename, event_name[0], False)
 		else:

@@ -183,7 +183,8 @@ print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"
 #time=raw_input('Input the time you want:')
 
 #j = int(time)-18
-j-=3
+j-=1
+
 print response_event.json()["events"][j]["name"]["text"]
 
 # mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
