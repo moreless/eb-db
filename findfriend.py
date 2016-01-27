@@ -6,7 +6,7 @@ import pymongo
 from pymongo import MongoClient
 import operator
 from math import sqrt
-from pprint import pprint
+import pprint
 
 user = range(3)
 conf_file='eb.conf'
@@ -19,6 +19,12 @@ client = MongoClient('localhost', 27017)
 db = client['ValleyRain']
 db.authenticate(user[1], user[2])
 collection = db['UserProfile'] 
+
+class MyPrettyPrinter(pprint.PrettyPrinter):
+    def format(self, object, context, maxlevels, level):
+        if isinstance(object, unicode):
+            return (object.encode('utf8'), True, False)
+        return pprint.PrettyPrinter.format(self, object, context, maxlevels, level)
 
 def findFriend(username):
     record = collection.find_one({'name':username})
@@ -91,5 +97,5 @@ while(1):
     #Detect he name is in the database or not.
     result = findFriend(name) 
     if result:
-       pprint(result)
+       MyPrettyPrinter().pprint(result)
             
