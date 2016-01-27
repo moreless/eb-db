@@ -15,7 +15,7 @@ for line in f:
   line = line.rstrip()
   user = line.split(', ')
 
-client = MongoClient('localhost', 27017)
+client = MongoClient('54.153.41.222', 27017)
 db = client['ValleyRain']
 db.authenticate(user[1], user[2])
 collection = db['UserProfile'] 
@@ -95,6 +95,10 @@ while(1):
 
     name= name.title()
     #Detect he name is in the database or not.
+    result = collection.find_one({'name': name})
+    if result:
+       MyPrettyPrinter().pprint(result)
+    
     result = findFriend(name) 
     if result:
        MyPrettyPrinter().pprint(result)

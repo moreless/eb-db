@@ -29,7 +29,7 @@ for line in f:
   user = line.split(', ')
 
         
-client = MongoClient('localhost', 27017)
+client = MongoClient('54.153.41.222', 27017)
 db = client['ValleyRain']
 db.authenticate(user[1], user[2])
 collection = db['UserProfile']    
