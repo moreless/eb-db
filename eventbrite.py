@@ -159,11 +159,15 @@ def add_quote(str):
 
 filename = 'output.csv'
 
-conf_file = 'eb.conf'
-f = open(conf_file, 'r')
+user = range(3)
+conf_file='eb.conf'
 
-for key in f:
-  key=key.rstrip()
+f = open(conf_file, 'r')
+for line in f: 
+  line = line.rstrip()
+  user = line.split(', ')
+  key = user[0]
+
 
 response_event = requests.get(
     "https://www.eventbriteapi.com/v3/users/me/owned_events/",
@@ -186,6 +190,7 @@ print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"
 j-=1
 
 print response_event.json()["events"][j]["name"]["text"]
+print 'event_id', response_event.json()["events"][j]["id"]
 
 # mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
 # print mo[0]
@@ -215,11 +220,6 @@ if (object_count>50):
     },
     verify=True,  # Verify SSL certificate
   )
-
-#Initialize the database.
-'''client = MongoClient('localhost', 27017)
-db = client['ValleyRain']
-collection = db['UserProfile']'''
 
 with open(filename, 'a') as  output_file:
             output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')

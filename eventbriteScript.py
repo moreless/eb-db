@@ -200,21 +200,25 @@ def add_quote(str):
 '''
     Initialize the DataBase
 '''
-        
+   
+user = range(3)
+conf_file='eb.conf'
+f = open(conf_file, 'r')
+for line in f: 
+  line = line.rstrip()
+  user = line.split(', ')
+  key = user[0]
+
+
 client = MongoClient('localhost', 27017)
 db = client['ValleyRain']
+db.authenticate(user[1], user[2])
 collection = db['UserProfile'] 
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
 filename = 'guest.csv'
-
-conf_file='eb.conf'
-f = open(conf_file, 'r')
-for key in f: 
-  key = key.rstrip()
-
 
 # Get the whole events response.
 
@@ -230,17 +234,19 @@ response_event = requests.get(
 
 # Get the attendees for each events. 
 for j in range(response_event.json()["pagination"]["object_count"]):
+	pass
 
 	#comment for traverse all events
 	if j<response_event.json()["pagination"]["object_count"]-1 and notprintall:
 		continue
+	#j=j-1
 
 	print response_event.json()["events"][j]["name"]["text"]
 	#event_name = response_event.json()["events"][j]["name"]["text"]
 	event_name= re.findall(u'(《.+?》)', response_event.json()["events"][j]["name"]["text"])
 
-	# Get the information for each page. 
-	# TODO: How about n > 100? mod 50
+		# Get the information for each page. 
+		# TODO: How about n > 100? mod 50
 	response = requests.get(
 	    "https://www.eventbriteapi.com/v3/events/"+response_event.json()["events"][j]["id"]+"/attendees/",
 	    headers = {
@@ -259,15 +265,15 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 	if (object_count>50):
 
 		response2 = requests.get(
-		"https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
-		headers={
-		    "Authorization": key,
-		},
-		verify=True,  
-		)
-			
+			"https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
+			headers={
+			    "Authorization": key,
+			},
+			verify=True,  
+			)
+				
 	with open(filename, 'a+') as  output_file:
-				output_file.write(response_event.json()["events"][j]["name"]["text"]+'\n')
+					output_file.write(response_event.json()["events"][j]["name"]["text"]+'\n')
 
 	# Get the information for each attendees. 
 	for i in range (object_count):

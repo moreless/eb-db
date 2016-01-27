@@ -7,9 +7,17 @@ from pymongo import MongoClient
 import operator
 from math import sqrt
 from pprint import pprint
-        
+
+user = range(3)
+conf_file='eb.conf'
+f = open(conf_file, 'r')
+for line in f: 
+  line = line.rstrip()
+  user = line.split(', ')
+
 client = MongoClient('localhost', 27017)
 db = client['ValleyRain']
+db.authenticate(user[1], user[2])
 collection = db['UserProfile'] 
 
 def findFriend(username):
