@@ -99,6 +99,8 @@ while(1):
     if result:
        MyPrettyPrinter().pprint(result)
     
+    print '\nUser Correlations:\n'
+
     result = findFriend(name) 
     if result:
        MyPrettyPrinter().pprint(result)
