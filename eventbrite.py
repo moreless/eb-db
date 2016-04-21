@@ -187,7 +187,7 @@ print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"
 #time=raw_input('Input the time you want:')
 
 #j = int(time)-18
-j-=1
+j-=3
 
 print response_event.json()["events"][j]["name"]["text"]
 print 'event_id', response_event.json()["events"][j]["id"]
