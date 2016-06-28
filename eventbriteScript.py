@@ -212,7 +212,7 @@ for line in f:
 
 client = MongoClient('localhost', 27017)
 db = client['ValleyRain']
-db.authenticate(user[1], user[2])
+#db.authenticate(user[1], user[2])
 collection = db['UserProfile'] 
 
 reload(sys)

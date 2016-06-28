@@ -7,6 +7,8 @@ import re
 import calendar
 import dateutil.parser
 from datetime import datetime, timedelta
+import urllib3
+urllib3.disable_warnings()
 
 #import pymongo
 #from pymongo import MongoClient
@@ -66,7 +68,7 @@ def findAnswers(answers):
   #return where, first_time, wechat_id, hobbies, books, company, position, first_attend, live_place
   return ans
 
-def get_register_data(response, i, filename, flag):
+def get_register_data(response, i, filename, count):
     dataEntry    = response.json()['attendees'][i]
 
     user_profile = dataEntry['profile']
@@ -124,8 +126,7 @@ def get_register_data(response, i, filename, flag):
       )'''
 
 
-    if flag:
-      i=i+50
+    i=i+50*count
 
 
     if (first_time == 'Yes'):
@@ -211,24 +212,32 @@ else:
   object_count=0
   print 'nobody registered yet.'
 
-if (object_count>50):
-  response2 = requests.get(
-    # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
-    "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page=2",
-    headers={
-        "Authorization": key,
-    },
-    verify=True,  # Verify SSL certificate
-  )
-
-with open(filename, 'a') as  output_file:
-            output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')
-
 for i in range (object_count):
   if (i<50):
-    get_register_data(response, i, filename, False)
-  else:
-    get_register_data(response2, i-50, filename, True)
+    get_register_data(response, i, filename, 0)
+
+if (object_count>50):
+  for i in range(1, object_count/50+1):
+    #print "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page="+str(i+1)
+
+    response2 = requests.get(
+      # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
+      "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page="+str(i+1),
+      headers={
+          "Authorization": key,
+      },
+      verify=True,  # Verify SSL certificate
+    )
+    #print i
+    for j in range((i)*50, (i+1)*50):
+      get_register_data(response2, j-50*i, filename, i)
+
+#with open(filename, 'a') as  output_file:
+ #           output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')
+
+
+  
+    
 
   # Email
   # Name
