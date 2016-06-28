@@ -237,13 +237,16 @@ for j in range(response_event.json()["pagination"]["object_count"]):
 	pass
 
 	#comment for traverse all events
-	if j<response_event.json()["pagination"]["object_count"]-1 and notprintall:
-		continue
-	#j=j-1
+	#if j<response_event.json()["pagination"]["object_count"]-1 and notprintall:
+	#	continue
+
+	#j=j-2
 
 	print response_event.json()["events"][j]["name"]["text"]
 	#event_name = response_event.json()["events"][j]["name"]["text"]
 	event_name= re.findall(u'(《.+?》)', response_event.json()["events"][j]["name"]["text"])
+	if (len(event_name)) ==0 :
+		event_name = response_event.json()["events"][j]["name"]["text"]
 
 		# Get the information for each page. 
 		# TODO: How about n > 100? mod 50
