@@ -91,9 +91,6 @@ def get_register_data(response, i, filename, count):
     first_attend =ans[7]
     live_place = ans [8]
 
-    if (user_profile['name'] == 'Mosha Qi') :
-       print "★NEW★❤★❤★❤★❤★❤★"
-
     if 'answer' in hobbies:
       hobbies_str = hobbies['answer'].replace(',', ' ').rstrip()
     else:
@@ -158,89 +155,83 @@ def utc_to_local(utc_dt):
 def add_quote(str):
     return '"' + str + '"'
 
-filename = 'output.csv'
+if __name__== "__main__":
 
-user = range(3)
-conf_file='eb.conf'
+  filename = 'output.csv'
 
-f = open(conf_file, 'r')
-for line in f: 
-  line = line.rstrip()
-  user = line.split(', ')
-  key = user[0]
+  user = range(3)
+  conf_file='eb.conf'
+
+  f = open(conf_file, 'r')
+  for line in f: 
+    line = line.rstrip()
+    user = line.split(', ')
+    key = user[0]
 
 
-response_event = requests.get(
-    "https://www.eventbriteapi.com/v3/users/me/owned_events/",
+  response_event = requests.get(
+      "https://www.eventbriteapi.com/v3/users/me/owned_events/",
 
-    headers={
-        "Authorization": key,
-    },
-    verify=True,  # Verify SSL certificate
-)
-
-for j in range(response_event.json()["pagination"]["object_count"]):
-    pass
-
-lasttime=response_event.json()["pagination"]["object_count"]+17
-print 'First time is 18 %s' %(response_event.json()["events"][0]["name"]["text"])
-print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"]["text"])
-#time=raw_input('Input the time you want:')
-
-#j = int(time)-18
-j-=3
-
-print response_event.json()["events"][j]["name"]["text"]
-print 'event_id', response_event.json()["events"][j]["id"]
-
-# mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
-# print mo[0]
-
-response = requests.get(
-    # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
-    "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/",
-    headers={
-        "Authorization": key,
-    },
-    verify=True,  # Verify SSL certificate
-)
-
-if 'object_count' in response.json()["pagination"]:
-  object_count= response.json()["pagination"]["object_count"]
-  print object_count, "registered"
-else:
-  object_count=0
-  print 'nobody registered yet.'
-
-for i in range (object_count):
-  if (i<50):
-    get_register_data(response, i, filename, 0)
-
-if (object_count>50):
-  for i in range(1, object_count/50+1):
-    #print "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page="+str(i+1)
-
-    response2 = requests.get(
-      # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
-      "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page="+str(i+1),
       headers={
           "Authorization": key,
       },
       verify=True,  # Verify SSL certificate
-    )
-    #print i
-    for j in range((i)*50, (i+1)*50):
-      get_register_data(response2, j-50*i, filename, i)
+  )
 
-#with open(filename, 'a') as  output_file:
- #           output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')
+  for j in range(response_event.json()["pagination"]["object_count"]):
+      pass
 
+  lasttime=response_event.json()["pagination"]["object_count"]+17
+  print 'First time is 18 %s' %(response_event.json()["events"][0]["name"]["text"])
+  print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"]["text"])
+  #time=raw_input('Input the time you want:')
 
-  
-    
+  #j = int(time)-18
+  j-=1
 
-  # Email
-  # Name
-  # First time
-  # Hobby
-  # How Many times.
+  print response_event.json()["events"][j]["name"]["text"]
+  print 'event_id', response_event.json()["events"][j]["id"]
+
+  # mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
+  # print mo[0]
+
+  response = requests.get(
+      # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
+      "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/",
+      headers={
+          "Authorization": key,
+      },
+      verify=True,  # Verify SSL certificate
+  )
+
+  if 'object_count' in response.json()["pagination"]:
+    object_count= response.json()["pagination"]["object_count"]
+    print object_count, "registered"
+  else:
+    object_count=0
+    print 'nobody registered yet.'
+
+  for i in range (object_count):
+    if (i<50):
+     get_register_data(response, i, filename, 0)
+
+  if (object_count>50):
+    for i in range(1,object_count/50+1):
+        #print "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page="+str(i+1)
+
+      response2 = requests.get(
+        # "https://www.eventbriteapi.com/v3/users/me/owned_events/",
+        "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page="+str(i+1),
+        headers={
+            "Authorization": key,
+        },
+        verify=True,  # Verify SSL certificate
+      )
+      #print i
+      for k in range((i)*50, (i+1)*50):
+        if k<object_count:
+          get_register_data(response2, k-50*i, filename, i)
+
+  #with open(filename, 'a') as  output_file:
+   #           output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')
+   
