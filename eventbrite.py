@@ -178,16 +178,28 @@ if __name__== "__main__":
       verify=True,  # Verify SSL certificate
   )
 
-  for j in range(response_event.json()["pagination"]["object_count"]):
-      pass
+  object_count=response_event.json()["pagination"]["object_count"]
+  page_count = response_event.json()["pagination"]["page_count"]
+  #print response_event.json()["pagination"]["object_count"]
 
-  lasttime=response_event.json()["pagination"]["object_count"]+17
+  j = object_count%50-1
   print 'First time is 18 %s' %(response_event.json()["events"][0]["name"]["text"])
+
+  lasttime=object_count+17
+
+  if page_count >1: 
+    response_event = requests.get(
+        "https://www.eventbriteapi.com/v3/users/me/owned_events/?page="+str(page_count),
+        headers={
+            "Authorization": key,
+        },
+        verify=True,  # Verify SSL certificate
+    )
   print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"]["text"])
   #time=raw_input('Input the time you want:')
 
   #j = int(time)-18
-  j-=1
+
 
   print response_event.json()["events"][j]["name"]["text"]
   print 'event_id', response_event.json()["events"][j]["id"]
@@ -216,7 +228,7 @@ if __name__== "__main__":
      get_register_data(response, i, filename, 0)
 
   if (object_count>50):
-    for i in range(1,object_count/50+1):
+    for i in range(1, object_count/50+1):
         #print "https://www.eventbriteapi.com/v3/events/" + response_event.json()["events"][j]["id"] + "/attendees/?page="+str(i+1)
 
       response2 = requests.get(
