@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import requests
-import sys
+import sys, time
 import re
 import calendar
 import dateutil.parser
@@ -246,4 +246,5 @@ if __name__== "__main__":
 
   #with open(filename, 'a') as  output_file:
    #           output_file.write(response_event.json()["events"][j]["name"]["text"] + '\n')
-   
+  str= (time.strftime('%H:%M:%S %m/%d/%Y'))
+  print '\nQuery at time: '+str
