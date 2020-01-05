@@ -13,6 +13,9 @@ from pymongo import MongoClient
 
 notprintall = False
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 def findAnswers(answers):
   ans=['','','','','','','','','']
   '''
@@ -75,7 +78,14 @@ def get_register_data(response, i, filename, event_name, count):
 
     utc_date = dateutil.parser.parse(est_time)
     date = utc_to_local(utc_date)
+
+    if 'email' not in user_profile:
+      user_profile['email']=''
+    if not answers:
+        return
     ans = findAnswers(answers)
+
+
     #print ans
 
     where= ans[0]
@@ -110,7 +120,7 @@ def get_register_data(response, i, filename, event_name, count):
         return 
     
     eventID = dataEntry['event_id']
-    status  = dataEntry['status']
+    #status  = dataEntry['status']
     
     userRecord = collection.find_one({'email': email})
     
@@ -386,9 +396,7 @@ def get_all_members(response_eventm, end_count, first_page, count):
         else:
             print j+50*count+18, response_event.json()["events"][j]["name"]["text"]
         #event_name = response_event.json()["events"][j]["name"]["text"]
-        event_name= re.findall(u'(《.+?》)', response_event.json()["events"][j]["name"]["text"])
-        if (len(event_name)) ==0 :
-            event_name = response_event.json()["events"][j]["name"]["text"]
+        event_name = response_event.json()["events"][j]["name"]["text"].replace('.','')
 
             # Get the information for each page. 
             # TODO: How about n > 100? mod 50
@@ -403,13 +411,17 @@ def get_all_members(response_eventm, end_count, first_page, count):
         if 'object_count' in response.json()["pagination"]:
             object_count= response.json()["pagination"]["object_count"]
             print object_count, "registered"
+            info =  '%s\n%d registered.\n' % (event_name.decode('utf-8'), object_count)
+            with open(filename, 'a') as  output_file:
+              output_file.write(info)
         else:
             object_count=0
             print 'nobody registered yet.'
 
+
         for i in range (object_count):
             if (i<50):
-                get_register_data(response, i, filename, event_name[0], 0)
+                get_register_data(response, i, filename, event_name, 0)
 
         if (object_count>50):
             for i in range(1, object_count/50+1):
@@ -426,7 +438,7 @@ def get_all_members(response_eventm, end_count, first_page, count):
                 #print i
                 for k in range((i)*50, (i+1)*50):
                     if k<object_count:
-                      get_register_data(response2, k-50*i, filename, event_name[0], i)
+                      get_register_data(response2, k-50*i, filename, event_name, i)
     
 def utc_to_local(utc_dt):
     # get integer timestamp to avoid precision lost

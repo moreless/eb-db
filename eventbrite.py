@@ -23,7 +23,7 @@ def findAnswers(answers):
   '''
 
   if not answers:
-    print 'Errors! No answers found in this entry.\n'
+    print 'Errors! No answers found in this entry.'
     return
 
   for entry in answers:
@@ -72,12 +72,21 @@ def get_register_data(response, i, filename, count):
     dataEntry    = response.json()['attendees'][i]
 
     user_profile = dataEntry['profile']
+    if 'email' not in user_profile:
+      user_profile['email']=''
     answers      = dataEntry['answers']
+    ticket_class = dataEntry["ticket_class_name"]
     status       = dataEntry['barcodes'][0]['status']
     est_time     = dataEntry['barcodes'][0]['created']
+    cost         = dataEntry['costs']['gross']['display']
 
     utc_date = dateutil.parser.parse(est_time)
     date = utc_to_local(utc_date)
+
+    if not answers:
+        print i+1, user_profile['name'], user_profile['email'], ticket_class, status, cost
+        i+=1
+        return
     ans = findAnswers(answers)
     #print ans
 
@@ -129,17 +138,14 @@ def get_register_data(response, i, filename, count):
     if (first_time == 'Yes'):
         print i + 1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id, first_time, \
               '"' + hobbies.replace(',', ' ').rstrip() + '"', '"' + books.replace(',', ' ').rstrip() + '"', company, \
-              add_quote(position), add_quote(live_place), where, status, date
-        str = '%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (i + 1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id, first_time, \
+              add_quote(position), add_quote(live_place), where, status, '"'+ticket_class+'"', cost, date
+        str = '%d,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (i + 1, user_profile['name'].decode('utf-8'), user_profile['email'], wechat_id, first_time, \
             hobbies.replace(',', ' ').rstrip(), books.replace(',', ' ').rstrip(), company, position, \
-            live_place, where, status, date)
+            live_place, where, status, '"'+ticket_class+'"', cost, date)
     else :
-        print i + 1, user_profile['name'], user_profile['email'], first_time, add_quote(first_attend), where, status, date
-        str = '%d,%s,%s.%s,%s,%s,%s,%s\n' % (i + 1, user_profile['name'], user_profile['email'], first_time, first_attend.decode('utf-8'), \
-         where, status, date)
-
-    if (user_profile['name'] == 'Mosha Qi') :
-       print "★NEW★❤★❤★❤★❤★❤★"
+        print i + 1, user_profile['name'], user_profile['email'], first_time, add_quote(first_attend), where, status, '"'+ticket_class+'"', cost, date
+        str = '%d,%s,%s.%s,%s,%s,%s,%s,%s,%s\n' % (i + 1, user_profile['name'], user_profile['email'], first_time, first_attend.decode('utf-8'), \
+         where, status, '"'+ticket_class+'"', cost, date)
 
     with open(filename, 'a') as  output_file:
         output_file.write(str)
@@ -180,10 +186,13 @@ if __name__== "__main__":
 
   object_count=response_event.json()["pagination"]["object_count"]
   page_count = response_event.json()["pagination"]["page_count"]
-  #print response_event.json()["pagination"]["object_count"]
+  
+  print "object_count is %d, page_count is %d" % ( object_count, page_count)
+  #object_count = 250
+  #page_count = 5
+  j = (object_count)%50-4
 
-  j = object_count%50-1
-  print 'First time is 18 %s' %(response_event.json()["events"][0]["name"]["text"])
+  print 'First time is 18', response_event.json()["events"][0]["name"]["text"].decode('utf-8')
 
   lasttime=object_count+17
 
@@ -195,7 +204,7 @@ if __name__== "__main__":
         },
         verify=True,  # Verify SSL certificate
     )
-  print 'last time is %d %s' %(lasttime, response_event.json()["events"][j]["name"]["text"])
+  print 'last time is %d ' %(lasttime), response_event.json()["events"][j]["name"]["text"].decode('utf-8')
   #time=raw_input('Input the time you want:')
 
   #j = int(time)-18
@@ -204,6 +213,7 @@ if __name__== "__main__":
   print response_event.json()["events"][j]["name"]["text"]
   print 'event_id', response_event.json()["events"][j]["id"]
 
+  event_name = response_event.json()["events"][j]["name"]["text"]
   # mo= re.findall(u'(第.+?期)', str(response_event.json()["events"][j]["name"]["text"]))
   # print mo[0]
 
@@ -222,6 +232,9 @@ if __name__== "__main__":
   else:
     object_count=0
     print 'nobody registered yet.'
+  info =  '%s\n%d registered.\n' % (event_name, object_count)
+  with open(filename, 'a') as  output_file:
+    output_file.write(info)
 
   for i in range (object_count):
     if (i<50):
