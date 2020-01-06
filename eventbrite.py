@@ -84,9 +84,17 @@ def get_register_data(response, i, filename, count):
     date = utc_to_local(utc_date)
 
     if not answers:
-        print i+1, user_profile['name'], user_profile['email'], ticket_class, status, cost
-        i+=1
+        address = user_profile['addresses']
+        i=i+50*count
+        if address != {} and 'address_1' in user_profile['addresses']['bill']:
+          print i+1, user_profile['name'], user_profile['email'], user_profile['company'], user_profile['job_title'], \
+              '"'+address['bill']['address_1']+',', address['bill']['city'], address['bill']['postal_code']+'"', \
+              status, '"'+ticket_class+'"', cost, date
+        else:
+          print i+1, user_profile['name'], user_profile['email'], user_profile['company'], user_profile['job_title'], \
+              status, '"'+ticket_class+'"', cost, date
         return
+   
     ans = findAnswers(answers)
     #print ans
 
